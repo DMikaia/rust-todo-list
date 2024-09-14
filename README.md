@@ -1,4 +1,4 @@
-# A rust todo list
+# A Rust todo list
 
 This little project is a simple to do list implementation with rust using the command line interface.
 
@@ -7,4 +7,4 @@ This little project is a simple to do list implementation with rust using the co
 - Add a task
 - Remove a task
 - View all tasks
-- Save tasks in **"task.txt"** and exit
+- Save tasks in **"task.txt"** and exit the program
