@@ -7,4 +7,4 @@ This little project is a simple to do list implementation with rust using the co
 - Add a task
 - Remove a task
 - View all tasks
-- Save list in **"tasks.txt"**
+- Save list in **"file_name.txt"**

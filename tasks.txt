@@ -1,5 +1,3 @@
-Creating a web server with rust
+Buy some milk.
 Eat more healthy
-Test if this works
-Another test
-This is awesome
+Drink more water
