@@ -23,3 +23,15 @@ impl PartialEq for Task {
         self.id == other.id && self.description == other.description
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_task() {
+        let task: Task = Task::new(1, "Hello, world!".to_string());
+
+        assert_eq!(Task::new(1, "Hello, world!".to_string()), task);
+    }
+}
