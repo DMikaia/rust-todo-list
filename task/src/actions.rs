@@ -12,13 +12,14 @@ pub fn display_task(tasks: &HashMap<usize, Task>) {
     }
 }
 
-pub fn add_task(tasks: &mut HashMap<usize, Task>, description: String) {
+pub fn add_task(tasks: &mut HashMap<usize, Task>, description: String) -> Result<(), String> {
     if description.len() == 0 {
-        eprintln!("A description most be provided\n");
-        return;
+        return Err("A description most be provided".to_string());
     }
 
     tasks.insert(tasks.len() + 1, Task::new(tasks.len() + 1, description));
+
+    Ok(())
 }
 
 pub fn remove_task(tasks: &mut HashMap<usize, Task>, id: usize) -> Result<Task, String> {
@@ -27,14 +28,69 @@ pub fn remove_task(tasks: &mut HashMap<usize, Task>, id: usize) -> Result<Task, 
         return Err("The current task list is empty.".to_string());
     }
 
-    if id == 0 || id > tasks.len() {
-        eprintln!();
-        return Err(format!("The id most be in range of 1 to {}\n", tasks.len()));
-    }
-
     if let Some(task) = tasks.remove(&id) {
         Ok(task)
     } else {
         Err("Task not found.".to_string())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn adding_task_success() {
+        let mut tasks: HashMap<usize, Task> = HashMap::new();
+
+        let mut expected_result: HashMap<usize, Task> = HashMap::new();
+        expected_result.insert(1, Task::new(1, "Test".to_string()));
+
+        match add_task(&mut tasks, "Test".to_string()) {
+            Ok(()) => assert_eq!(expected_result, tasks),
+            Err(_) => {}
+        }
+    }
+
+    #[test]
+    fn adding_task_with_an_empty_description() {
+        let mut tasks: HashMap<usize, Task> = HashMap::new();
+
+        match add_task(&mut tasks, "".to_string()) {
+            Ok(()) => {}
+            Err(e) => assert_eq!("A description most be provided".to_string(), e),
+        }
+    }
+
+    #[test]
+    fn removing_task_success() {
+        let mut tasks: HashMap<usize, Task> = HashMap::new();
+        tasks.insert(1, Task::new(1, "Test number 1".to_string()));
+        tasks.insert(2, Task::new(2, "Test number 2".to_string()));
+
+        if let Ok(removed_task) = remove_task(&mut tasks, 2) {
+            assert_eq!(Task::new(2, "Test number 2".to_string()), removed_task);
+        }
+    }
+
+    #[test]
+    fn removing_task_with_an_empty_list() {
+        let mut tasks: HashMap<usize, Task> = HashMap::new();
+
+        match remove_task(&mut tasks, 1) {
+            Ok(_) => {}
+            Err(e) => assert_eq!("The current task list is empty.".to_string(), e),
+        }
+    }
+
+    #[test]
+    fn removing_task_not_found() {
+        let mut tasks: HashMap<usize, Task> = HashMap::new();
+        tasks.insert(1, Task::new(1, "Test number 1".to_string()));
+
+        match remove_task(&mut tasks, 2) {
+            Ok(_) => {}
+            Err(e) => assert_eq!("Task not found.".to_string(), e),
+        }
     }
 }
