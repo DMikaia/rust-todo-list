@@ -24,7 +24,6 @@ pub fn add_task(tasks: &mut HashMap<usize, Task>, description: String) -> Result
 
 pub fn remove_task(tasks: &mut HashMap<usize, Task>, id: usize) -> Result<Task, String> {
     if tasks.len() == 0 {
-        eprintln!();
         return Err("The current task list is empty.".to_string());
     }
 

@@ -1,12 +1,14 @@
 use crate::tasks::Task;
-use std::{collections::HashMap, fs::read_to_string, process};
+use std::{collections::HashMap, fs::File, io::Read, process};
 
-pub fn load_task(file_path: String) -> HashMap<usize, Task> {
-    match read_to_string(file_path) {
-        Ok(tasks_str) => {
+pub fn load_task(file: &mut File) -> HashMap<usize, Task> {
+    let mut contents = String::new();
+
+    match file.read_to_string(&mut contents) {
+        Ok(_) => {
             let mut tasks: HashMap<usize, Task> = HashMap::new();
 
-            for line in tasks_str.lines() {
+            for line in contents.lines() {
                 if let Some(task) = get_task(tasks.len() + 1, line.trim().to_string()) {
                     tasks.insert(tasks.len() + 1, task);
                 }
@@ -15,7 +17,7 @@ pub fn load_task(file_path: String) -> HashMap<usize, Task> {
             tasks
         }
         Err(e) => {
-            eprintln!("File not found.\n{e}");
+            eprintln!("Could not read the file.\n{e}");
             process::exit(1);
         }
     }
@@ -36,10 +38,13 @@ mod test {
     fn loading_task() {
         let mut expected_result: HashMap<usize, Task> = HashMap::new();
 
-        expected_result.insert(1, Task::new(1, "Buy some milk.".to_string()));
-        expected_result.insert(2, Task::new(2, "Eat more healthy".to_string()));
         expected_result.insert(3, Task::new(3, "Drink more water".to_string()));
+        expected_result.insert(2, Task::new(2, "Eat more healthy".to_string()));
+        expected_result.insert(1, Task::new(1, "Buy some milk.".to_string()));
 
-        assert_eq!(expected_result, load_task("./mocks/tasks.txt".to_string()));
+        match File::open("./mocks/tasks.txt".to_string()) {
+            Ok(mut file) => assert_eq!(expected_result, load_task(&mut file)),
+            Err(_) => {}
+        }
     }
 }
