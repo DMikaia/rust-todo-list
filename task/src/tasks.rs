@@ -10,6 +10,10 @@ impl Task {
     pub fn new(id: usize, description: String) -> Self {
         Self { id, description }
     }
+
+    pub fn get_description(&self) -> &str {
+        &self.description
+    }
 }
 
 impl Display for Task {
