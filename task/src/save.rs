@@ -5,10 +5,11 @@ use std::{
     io::{Seek, Write},
 };
 
+/// This saves all tasks in the target file.
 pub fn save_task(file: &mut File, tasks: HashMap<usize, Task>) -> Result<(), String> {
     file.rewind()
         .expect("Unable to rewind the file back to the first line.");
-    file.set_len(0).expect("Failed to clear the file");
+    file.set_len(0).expect("Failed to clear the file.");
 
     for (id, (_, task)) in tasks.iter().enumerate() {
         match file.write_fmt(format_args!(

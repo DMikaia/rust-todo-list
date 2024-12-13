@@ -1,6 +1,7 @@
 use crate::tasks::Task;
 use std::{collections::HashMap, fs::File, io::Read, process};
 
+/// This will load all tasks from an existing file and store them in a hashmap.
 pub fn load_task(file: &mut File) -> HashMap<usize, Task> {
     let mut contents = String::new();
 
@@ -23,6 +24,7 @@ pub fn load_task(file: &mut File) -> HashMap<usize, Task> {
     }
 }
 
+/// This will extract a task from a line in the target file.
 fn get_task(id: usize, task_str: String) -> Option<Task> {
     match task_str.len() {
         0 => None,
