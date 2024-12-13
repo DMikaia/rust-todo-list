@@ -2,11 +2,43 @@ use clearscreen::clear;
 use std::{
     collections::HashMap,
     fs::{File, OpenOptions},
-    io::{self, Stdin, Write},
+    io::{self, stdin, Stdin, Write},
     process::{self},
 };
-use task::{add_task, remove_task, Task};
+use task::{add_task, display_task, load_task, remove_task, save_task, Task};
 
+/// The main loop of the app.
+pub fn run_app(mut file: File) -> Result<(), String> {
+    let mut tasks: HashMap<usize, Task> = load_task(&mut file);
+    let stdin: Stdin = stdin();
+
+    clear().expect("Could not clear the screen");
+
+    loop {
+        display_task(&tasks);
+        println!();
+        match get_choice_from_input(&stdin)? {
+            3 => {
+                println!("\nShutting down...\n");
+                save_task(&mut file, tasks)?;
+
+                break;
+            }
+            choice => handle_crud_actions(&stdin, choice, &mut tasks),
+        }
+    }
+
+    Ok(())
+}
+
+/// Initialize the file by opening it or creating a new one, depending on the arguments.
+///
+/// # Example :
+///
+/// cargo run test.txt.
+///
+/// This will create or load a new file to store the list of tasks.
+/// And if no arguments are supplied, a file named **"tasks.txt”** will be created or loaded by default.
 pub fn init_file(mut args: impl Iterator<Item = String>) -> File {
     args.next();
 
@@ -24,7 +56,8 @@ pub fn init_file(mut args: impl Iterator<Item = String>) -> File {
     }
 }
 
-pub fn handle_input(stdin: &Stdin) -> Result<String, String> {
+/// This is a help function for retrieving user input data.
+fn handle_input(stdin: &Stdin) -> Result<String, String> {
     print!("-> ");
     io::stdout().flush().expect("\nError: Failed to flush.");
 
@@ -38,7 +71,8 @@ pub fn handle_input(stdin: &Stdin) -> Result<String, String> {
     }
 }
 
-pub fn get_choice_from_input(stdin: &Stdin) -> Result<usize, String> {
+/// This function is used to retrieve the action the user wishes to perform.
+fn get_choice_from_input(stdin: &Stdin) -> Result<usize, String> {
     println!("Enter your choice: ");
     println!("1 -> Add a new task.");
     println!("2 -> Remove a task.");
@@ -52,7 +86,10 @@ pub fn get_choice_from_input(stdin: &Stdin) -> Result<usize, String> {
     }
 }
 
-pub fn handle_actions(stdin: &Stdin, choice: usize, tasks: &mut HashMap<usize, Task>) {
+/// Used for all specific CRUD actions such as deleting a task.
+/// This will display an error on failure and wait for the user to
+/// press enter to clear the screen and restart the loop.
+fn handle_crud_actions(stdin: &Stdin, choice: usize, tasks: &mut HashMap<usize, Task>) {
     let res: Result<(), String> = match choice {
         1 => handle_add_task(&stdin, tasks),
         2 => handle_remove_task(&stdin, tasks),
@@ -65,7 +102,8 @@ pub fn handle_actions(stdin: &Stdin, choice: usize, tasks: &mut HashMap<usize, T
     }
 }
 
-pub fn handle_add_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Result<(), String> {
+/// This retrieves a description from the console and validates it before creating the new task.
+fn handle_add_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Result<(), String> {
     println!("\nEnter the new task:");
     let description = match handle_input(stdin) {
         Ok(desc) => desc,
@@ -78,7 +116,8 @@ pub fn handle_add_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Resul
     }
 }
 
-pub fn handle_remove_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Result<(), String> {
+/// This retrieves an identifier from the console input and validates it before deleting the task.
+fn handle_remove_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Result<(), String> {
     println!("\nEnter the id of the task:");
     let id = match handle_input(stdin) {
         Ok(id) => id
@@ -93,7 +132,8 @@ pub fn handle_remove_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Re
     }
 }
 
-pub fn wait_and_clear(stdin: &Stdin) {
+/// This is used to clear the screen when the user presses the Enter key.
+fn wait_and_clear(stdin: &Stdin) {
     let mut input = String::new();
     match stdin.read_line(&mut input) {
         Ok(_) => {}
