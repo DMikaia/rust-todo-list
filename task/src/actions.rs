@@ -1,14 +1,23 @@
 use crate::tasks::Task;
 use std::collections::HashMap;
 
+fn parse_and_sort_tasks(tasks: &HashMap<usize, Task>) -> Vec<&Task> {
+    let mut tasks_vec: Vec<&Task> = tasks.iter().map(|t| t.1).collect();
+    tasks_vec.sort_by(|a, b| a.get_id().partial_cmp(&b.get_id()).unwrap());
+
+    tasks_vec
+}
+
 pub fn display_task(tasks: &HashMap<usize, Task>) {
     if tasks.len() == 0 {
         println!("Task list is currently empty.\n");
     }
 
+    let tasks_vec: Vec<&Task> = parse_and_sort_tasks(tasks);
+
     println!("Tasks:");
-    for (_, task) in tasks.iter() {
-        println!("{task}");
+    for &task in tasks_vec.iter() {
+        println!("{}", task);
     }
 }
 
