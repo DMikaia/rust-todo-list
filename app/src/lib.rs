@@ -35,8 +35,9 @@ pub fn run_app(mut file: File) -> Result<(), String> {
 ///
 /// # Example :
 ///
+/// ```bash
 /// cargo run test.txt.
-///
+/// ```
 /// This will create or load a new file to store the list of tasks.
 /// And if no arguments are supplied, a file named **"tasks.txt”** will be created or loaded by default.
 pub fn init_file(mut args: impl Iterator<Item = String>) -> File {
