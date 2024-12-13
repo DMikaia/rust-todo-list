@@ -1,11 +1,11 @@
+use clearscreen::clear;
 use std::{
     collections::HashMap,
     fs::{File, OpenOptions},
     io::{self, Stdin, Write},
     process::{self},
 };
-
-use task::{add_task, Task};
+use task::{add_task, remove_task, Task};
 
 pub fn init_file(mut args: impl Iterator<Item = String>) -> File {
     args.next();
@@ -40,10 +40,9 @@ pub fn handle_input(stdin: &Stdin) -> Result<String, String> {
 
 pub fn get_choice_from_input(stdin: &Stdin) -> Result<usize, String> {
     println!("Enter your choice: ");
-    println!("1 -> Display all the tasks.");
-    println!("2 -> Add a new task.");
-    println!("3 -> Remove a task.");
-    println!("4 -> Save and Quit.");
+    println!("1 -> Add a new task.");
+    println!("2 -> Remove a task.");
+    println!("3 -> Save and Quit.");
 
     match handle_input(stdin) {
         Ok(choice) => Ok(choice
@@ -64,4 +63,27 @@ pub fn handle_add_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Resul
         Ok(_) => Ok(()),
         Err(e) => Err(e),
     }
+}
+
+pub fn handle_remove_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Result<(), String> {
+    println!("\nEnter the id of the task:");
+    let id = match handle_input(stdin) {
+        Ok(id) => id.parse::<usize>().expect("The id most be a valid number"),
+        Err(e) => return Err(e),
+    };
+
+    match remove_task(tasks, id) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e),
+    }
+}
+
+pub fn wait_and_clear(stdin: &Stdin) {
+    let mut input = String::new();
+    match stdin.read_line(&mut input) {
+        Ok(_) => {}
+        Err(_) => {}
+    }
+
+    clear().expect("Could not clear the screen");
 }
