@@ -5,6 +5,7 @@ use std::{
     io::{Seek, Write},
 };
 
+/// This saves all tasks in the target file.
 pub fn save_task(file: &mut File, tasks: HashMap<usize, Task>) -> Result<(), String> {
     file.rewind()
         .expect("Unable to rewind the file back to the first line.");

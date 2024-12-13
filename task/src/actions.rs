@@ -1,6 +1,7 @@
 use crate::tasks::Task;
 use std::collections::HashMap;
 
+/// This will parse the task hashmap into a vector and sort it by id.
 fn parse_and_sort_tasks(tasks: &HashMap<usize, Task>) -> Vec<&Task> {
     let mut tasks_vec: Vec<&Task> = tasks.iter().map(|t| t.1).collect();
     tasks_vec.sort_by(|a, b| a.get_id().partial_cmp(&b.get_id()).unwrap());
@@ -8,6 +9,7 @@ fn parse_and_sort_tasks(tasks: &HashMap<usize, Task>) -> Vec<&Task> {
     tasks_vec
 }
 
+/// This will display the current tasks list.
 pub fn display_task(tasks: &HashMap<usize, Task>) {
     if tasks.len() == 0 {
         println!("Task list is currently empty.\n");
@@ -20,6 +22,7 @@ pub fn display_task(tasks: &HashMap<usize, Task>) {
     }
 }
 
+/// This will add a new task only if the description is valid.
 pub fn add_task(tasks: &mut HashMap<usize, Task>, description: String) -> Result<(), String> {
     if description.len() == 0 {
         return Err("A description most be provided.".to_string());
@@ -30,6 +33,7 @@ pub fn add_task(tasks: &mut HashMap<usize, Task>, description: String) -> Result
     Ok(())
 }
 
+/// This will delete an existing task according to its identifier.
 pub fn remove_task(tasks: &mut HashMap<usize, Task>, id: usize) -> Result<Task, String> {
     if tasks.len() == 0 {
         return Err("The current task list is empty.".to_string());
