@@ -11,19 +11,18 @@ fn parse_and_sort_tasks(tasks: &HashMap<usize, Task>) -> Vec<&Task> {
 pub fn display_task(tasks: &HashMap<usize, Task>) {
     if tasks.len() == 0 {
         println!("Task list is currently empty.\n");
+        return;
     }
 
-    let tasks_vec: Vec<&Task> = parse_and_sort_tasks(tasks);
-
     println!("Tasks:");
-    for &task in tasks_vec.iter() {
+    for &task in parse_and_sort_tasks(tasks).iter() {
         println!("{}", task);
     }
 }
 
 pub fn add_task(tasks: &mut HashMap<usize, Task>, description: String) -> Result<(), String> {
     if description.len() == 0 {
-        return Err("A description most be provided".to_string());
+        return Err("A description most be provided.".to_string());
     }
 
     tasks.insert(tasks.len() + 1, Task::new(tasks.len() + 1, description));
@@ -66,7 +65,7 @@ mod test {
 
         match add_task(&mut tasks, "".to_string()) {
             Ok(()) => {}
-            Err(e) => assert_eq!("A description most be provided".to_string(), e),
+            Err(e) => assert_eq!("A description most be provided.".to_string(), e),
         }
     }
 

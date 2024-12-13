@@ -1,4 +1,4 @@
-use app::{get_choice_from_input, handle_add_task, handle_remove_task, init_file, wait_and_clear};
+use app::{get_choice_from_input, handle_actions, init_file};
 use clearscreen::clear;
 use std::{
     collections::HashMap,
@@ -25,15 +25,7 @@ fn main() -> Result<(), String> {
 
                 break;
             }
-            choice => {
-                match choice {
-                    1 => handle_add_task(&stdin, &mut tasks).unwrap_or_else(|e| eprintln!("\n{e}")),
-                    2 => handle_remove_task(&stdin, &mut tasks)
-                        .unwrap_or_else(|e| eprintln!("\n{e}")),
-                    _ => eprintln!("\nThe value most be in range of 1 to 3."),
-                }
-                wait_and_clear(&stdin);
-            }
+            choice => handle_actions(&stdin, choice, &mut tasks),
         }
     }
 
