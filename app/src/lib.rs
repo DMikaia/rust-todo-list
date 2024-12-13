@@ -1,8 +1,11 @@
 use std::{
+    collections::HashMap,
     fs::{File, OpenOptions},
-    io::{self, Write},
+    io::{self, Stdin, Write},
     process::{self},
 };
+
+use task::{add_task, Task};
 
 pub fn init_file(mut args: impl Iterator<Item = String>) -> File {
     args.next();
@@ -21,26 +24,44 @@ pub fn init_file(mut args: impl Iterator<Item = String>) -> File {
     }
 }
 
-pub fn get_choice_from_input() -> usize {
+pub fn handle_input(stdin: &Stdin) -> Result<String, String> {
+    print!("-> ");
+    io::stdout().flush().expect("Failed to flush");
+
+    let mut input = String::new();
+    match stdin.read_line(&mut input) {
+        Ok(_) => Ok(input.trim().to_string()),
+        Err(e) => {
+            eprintln!("{e}");
+            Err(e.to_string())
+        }
+    }
+}
+
+pub fn get_choice_from_input(stdin: &Stdin) -> Result<usize, String> {
     println!("Enter your choice: ");
     println!("1 -> Display all the tasks.");
     println!("2 -> Add a new task.");
     println!("3 -> Remove a task.");
     println!("4 -> Save and Quit.");
 
-    print!("-> ");
-    io::stdout().flush().expect("Failed to flush");
+    match handle_input(stdin) {
+        Ok(choice) => Ok(choice
+            .parse::<usize>()
+            .expect("The value most be a valid number between 1 and 4")),
+        Err(e) => Err(e),
+    }
+}
 
-    let mut input = String::new();
+pub fn handle_add_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Result<(), String> {
+    println!("Enter the new task:");
+    let description = match handle_input(stdin) {
+        Ok(desc) => desc,
+        Err(e) => return Err(e),
+    };
 
-    match io::stdin().read_line(&mut input) {
-        Ok(_) => input.trim().parse::<usize>().unwrap_or_else(|e| {
-            eprintln!("The inupt must be a valid positive number.\n{e}");
-            process::exit(1)
-        }),
-        Err(e) => {
-            eprintln!("{e}");
-            process::exit(1);
-        }
+    match add_task(tasks, description) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e),
     }
 }
