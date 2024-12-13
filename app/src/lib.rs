@@ -54,7 +54,7 @@ pub fn get_choice_from_input(stdin: &Stdin) -> Result<usize, String> {
 }
 
 pub fn handle_add_task(stdin: &Stdin, tasks: &mut HashMap<usize, Task>) -> Result<(), String> {
-    println!("Enter the new task:");
+    println!("\nEnter the new task:");
     let description = match handle_input(stdin) {
         Ok(desc) => desc,
         Err(e) => return Err(e),
