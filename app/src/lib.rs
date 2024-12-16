@@ -99,8 +99,8 @@ fn handle_crud_actions(stdin: &Stdin, choice: usize, tasks: &mut HashMap<usize, 
 
     if let Err(e) = res {
         eprintln!("{e}");
-        wait_and_clear(&stdin);
     }
+    wait_and_clear(&stdin);
 }
 
 /// This retrieves a description from the console and validates it before creating the new task.

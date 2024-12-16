@@ -30,14 +30,11 @@ pub fn save_task(file: &mut File, tasks: HashMap<usize, Task>) -> Result<(), Str
 
 #[cfg(test)]
 mod test {
-    use std::fs::OpenOptions;
-
     use super::*;
+    use std::fs::OpenOptions;
 
     #[test]
     fn saved_tasks() {
-        let mut result: bool = true;
-
         let mut tasks: HashMap<usize, Task> = HashMap::new();
         tasks.insert(3, Task::new(3, "Drink more water".to_string()));
         tasks.insert(2, Task::new(2, "Eat more healthy".to_string()));
@@ -48,13 +45,10 @@ mod test {
             .open("./mocks/save.txt".to_string())
             .unwrap();
 
-        match save_task(&mut save_file, tasks) {
-            Ok(()) => {}
-            Err(e) => {
-                eprintln!("{e}");
-                result = false;
-            }
-        }
+        let result: bool = match save_task(&mut save_file, tasks) {
+            Ok(()) => true,
+            Err(_) => false,
+        };
 
         assert_eq!(true, result)
     }
