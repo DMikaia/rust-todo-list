@@ -44,9 +44,11 @@ mod test {
         expected_result.insert(2, Task::new(2, "Eat more healthy".to_string()));
         expected_result.insert(1, Task::new(1, "Buy some milk.".to_string()));
 
-        match File::open("./mocks/tasks.txt".to_string()) {
-            Ok(mut file) => assert_eq!(expected_result, load_task(&mut file)),
-            Err(_) => {}
-        }
+        let loaded_task: HashMap<usize, Task> = match File::open("./mocks/tasks.txt".to_string()) {
+            Ok(mut file) => load_task(&mut file),
+            Err(_) => HashMap::new(),
+        };
+
+        assert_eq!(expected_result, loaded_task);
     }
 }
